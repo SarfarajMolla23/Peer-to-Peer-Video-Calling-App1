@@ -1,7 +1,6 @@
 let APP_ID = "1d523b4d3093496798b22cbc49cec616";
 
 let token = null;
-
 let uid = String(Math.floor(Math.random() * 10000));
 
 let client;
@@ -29,7 +28,7 @@ const servers = {
 
 let constraints = {
   video: {
-    width: { min: 640, ideal: 1280, max: 1280 },
+    width: { min: 640, ideal: 1080, max: 1080 },
     height: { min: 480, ideal: 720, max: 720 },
   },
   audio: true,
@@ -53,7 +52,7 @@ let init = async () => {
 
 let handleUserLeft = (MemberId) => {
   document.getElementById("user-2").style.display = "none";
-  document.getElementById("user-1").classList.add("smallFrame");
+  document.getElementById("user-1").classList.remove("smallFrame");
 };
 
 let handleMessageFromPeer = async (message, MemberId) => {
@@ -75,11 +74,11 @@ let handleMessageFromPeer = async (message, MemberId) => {
 };
 
 let handleUserJoined = async (MemberId) => {
-  console.log("A new user Joined the channel:", MemberId);
+  console.log("A new user joined the channel:", MemberId);
   createOffer(MemberId);
 };
 
-let createPeerConection = async (MemberId) => {
+let createPeerConnection = async (MemberId) => {
   peerConnection = new RTCPeerConnection(servers);
 
   remoteStream = new MediaStream();
@@ -122,7 +121,7 @@ let createPeerConection = async (MemberId) => {
 };
 
 let createOffer = async (MemberId) => {
-  await createPeerConection(MemberId);
+  await createPeerConnection(MemberId);
 
   let offer = await peerConnection.createOffer();
   await peerConnection.setLocalDescription(offer);
@@ -134,7 +133,7 @@ let createOffer = async (MemberId) => {
 };
 
 let createAnswer = async (MemberId, offer) => {
-  await createPeerConection(MemberId);
+  await createPeerConnection(MemberId);
 
   await peerConnection.setRemoteDescription(offer);
 
@@ -166,11 +165,11 @@ let toggleCamera = async () => {
   if (videoTrack.enabled) {
     videoTrack.enabled = false;
     document.getElementById("camera-btn").style.backgroundColor =
-      "rgb(255,80,80)";
+      "rgb(255, 80, 80)";
   } else {
     videoTrack.enabled = true;
     document.getElementById("camera-btn").style.backgroundColor =
-      "rgb(179,102,248,.9)";
+      "rgb(179, 102, 249, .9)";
   }
 };
 
@@ -193,7 +192,7 @@ let toggleMic = async () => {
 window.addEventListener("beforeunload", leaveChannel);
 
 document.getElementById("camera-btn").addEventListener("click", toggleCamera);
-
 document.getElementById("mic-btn").addEventListener("click", toggleMic);
 
 init();
+
