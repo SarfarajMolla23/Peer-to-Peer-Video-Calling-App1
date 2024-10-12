@@ -31,7 +31,6 @@ let init = async () => {
   client = await AgoraRTM.createInstance(APP_ID);
   await client.login({ uid, token });
 
-  
   channel = client.createChannel(roomId);
   await channel.join();
 
@@ -149,6 +148,18 @@ let addAnswer = async (answer) => {
 let leaveChannel = async () => {
   await channel.leave();
   await client.logout();
+};
+
+let toggleCamera = async () => {
+  let videoTrack = localStream
+    .getTracks()
+    .find((track) => track.kind === "video");
+
+  if (videoTrack.enabled) {
+    videoTrack.enabled = false;
+    document.getElementById("camera-btn").style.backgroundColor =
+      "rgb(255,80,80)";
+  }
 };
 
 window.addEventListener("beforeunload", leaveChannel);
