@@ -27,6 +27,14 @@ const servers = {
   ],
 };
 
+let constraints = {
+  video: {
+    width: { min: 640, ideal: 1280, max: 1280 },
+    height: { min: 480, ideal: 720, max: 720 },
+  },
+  audio: true,
+};
+
 let init = async () => {
   client = await AgoraRTM.createInstance(APP_ID);
   await client.login({ uid, token });
@@ -39,15 +47,13 @@ let init = async () => {
 
   client.on("MessageFromPeer", handleMessageFromPeer);
 
-  localStream = await navigator.mediaDevices.getUserMedia({
-    video: true,
-    audio: false,
-  });
+  localStream = await navigator.mediaDevices.getUserMedia(constraints);
   document.getElementById("user-1").srcObject = localStream;
 };
 
 let handleUserLeft = (MemberId) => {
   document.getElementById("user-2").style.display = "none";
+  document.getElementById("user-1").classList.add("smallFrame");
 };
 
 let handleMessageFromPeer = async (message, MemberId) => {
@@ -79,6 +85,8 @@ let createPeerConection = async (MemberId) => {
   remoteStream = new MediaStream();
   document.getElementById("user-2").srcObject = remoteStream;
   document.getElementById("user-2").style.display = "block";
+
+  document.getElementById("user-1").classList.add("smallFrame");
 
   if (!localStream) {
     localStream = await navigator.mediaDevices.getUserMedia({
@@ -159,8 +167,33 @@ let toggleCamera = async () => {
     videoTrack.enabled = false;
     document.getElementById("camera-btn").style.backgroundColor =
       "rgb(255,80,80)";
+  } else {
+    videoTrack.enabled = true;
+    document.getElementById("camera-btn").style.backgroundColor =
+      "rgb(179,102,248,.9)";
+  }
+};
+
+let toggleMic = async () => {
+  let audioTrack = localStream
+    .getTracks()
+    .find((track) => track.kind === "audio");
+
+  if (audioTrack.enabled) {
+    audioTrack.enabled = false;
+    document.getElementById("mic-btn").style.backgroundColor =
+      "rgb(255, 80, 80)";
+  } else {
+    audioTrack.enabled = true;
+    document.getElementById("mic-btn").style.backgroundColor =
+      "rgb(179, 102, 249, .9)";
   }
 };
 
 window.addEventListener("beforeunload", leaveChannel);
+
+document.getElementById("camera-btn").addEventListener("click", toggleCamera);
+
+document.getElementById("mic-btn").addEventListener("click", toggleMic);
+
 init();
